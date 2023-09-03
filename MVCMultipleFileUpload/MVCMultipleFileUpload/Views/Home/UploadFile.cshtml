@@ -1,0 +1,67 @@
+﻿
+@{
+    ViewBag.Title = "Upload File";
+}
+
+@section scripts
+{
+<script src="~/Scripts/knockout-3.4.0.js"></script>
+<script src="~/Scripts/FileUploadViewModel.js"></script>
+<script type="text/javascript">
+    $(function () {
+        //var data = @(Html.Raw(Json.Encode(this.Model)));
+        //var jsonModel = JSON.stringify(data);
+        var jsonModel = null;
+
+        ko.applyBindings(new FileUploadViewModel(
+                "@Url.Action("UploadFilePost", "Home")",
+                "dropbox",
+                "@Url.Content("~/Content/images/file_type_icons_flat_-13.png")",
+                ["jpg", "png"],
+                jsonModel), document.getElementById("fileUploadContainer"));
+    });
+</script>
+}
+
+<div id="fileUploadContainer">
+    @using (Html.BeginForm("UploadFilePost", "Home", FormMethod.Post, new {  @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
+    {
+        <br />
+        <div id="dropbox" dropzone="copy f:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet f:application/vnd.ms-excel" class="hero-unit">
+            <h2 id="droplabel">Drop zone - Drag & Drop your files here</h2>
+            <p id="dnd-notes">Only jpg and png file types are supported. Once you drop your files in the dropzone, the upload will start.</p>
+
+            <input data-bind="visible: showFileSelect" id="fileSelect" type="file" name="fileSelect" />
+            <p><button data-bind="visible: showSubmit" type="submit" class="btn btn-primary btn-large">Upload</button></p>
+        </div>
+        <table class="table table-striped" data-bind="visible: showResults">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>File name</th>
+                    <th>File size</th>
+                    <th>Upload Progress</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: fileList">
+                <tr>
+                    <td>
+                        <img style="max-height: 80px" data-bind="attr: { src: imgSrc }" alt="preview will display here" />
+                    </td>
+                    <td data-bind="text: fileName"></td>
+                    <td data-bind="text: fileSize"></td>
+                    <td>
+                        <div class="progress progress-info progress-striped">
+                            <div class="progress-bar" data-bind="style: { width: uploadPercentage }"></div>
+                        </div>
+                    </td>
+                    <td>
+                        <div data-bind="visible: showMessages, html: messages">
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    }
+</div>
